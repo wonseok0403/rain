@@ -58,3 +58,6 @@ ListAll 함수에서 호출하기 위해 만들어진 함수입니다. 파이썬
 벌터 계정이 가지고 있는 모든 서버 리스트를 리턴합니다. API호출이 완료도면 해당 내역을 문자열로 변환하여 리스너에 파라미터로 넘겨줍니다.  
 
 #### CreateRequest 부분은 Rain.js 의 존재 이유이기도 하며 굉장이 중요한 함수입니다. 이 함수의 구조도는 다음과 같습니다.
+![2018-08-13 6 08 48](https://user-images.githubusercontent.com/20366503/44006445-809533e6-9ebf-11e8-9593-3d18ce646478.png)
+
+##### 클라이언트들이 CreateRequest 함수를 호출하게되면 Rain.js 는 비동기적으로 이 처리를 진행하게 됩니다. 이 처리 흐름은 각각의 PythonScript 를 spawn 하게 하며, 새로 만들어진 파이썬 스크립트들은 vultrMaker.py 함수의 create api 함수를 이용하여 vultr 서버에 서버 구축 요청을 하게 됩니다. 이 요청의 결과로 받은 subid를 우선 ResponseCreate 의 결과로 리턴합니다. <br> 아직 인스턴스가 생성중이기 때문에, VultrMaker 들은 벌터 서버에 5초 간격으로 현재 이 서버의 상태를 확인하게 됩니다. 확인 결과 running -> stopped -> running 이 되면 createDone 함수를 호출하여 서버 생성의 완료를 알리어 서버를 바로 접속하여 이용할 수 있게 됩니다. 
