@@ -35,3 +35,16 @@ ListAll 함수에서 호출하기 위해 만들어진 함수입니다. 파이썬
 > python ./VultrMaker listall
 ##### 4) 해당 Subid 를 subid 값으로 갖는 인스턴스의 상태 살펴보기
 > python ./VultrMaker subdetail [Subid]
+
+# Rain.js
+### Rain.js 는 Rain 서버 입니다. Rain-Client 는 Rain-client 에 API 를 호출하면 등록된 Rain-Server 에서 소켓 처리 함수를 호출하여 처리를 시작합니다. Rain-Client 는 우박에 장착되어 적절히 처리될 수 있으며 단 한개의 Rain-Server 와 통신하며 Vultr 처리는 각각의 비동기 함수들이 따로 파이썬 스크립트를 실행하여 처리합니다.
+
+다음은 Rain.js 에 구현된 소켓 함수의 바인딩 함수와 호출하는 리스너 함수의 설명입니다.
+
+* connection( socket )
+소켓이 바인딩되면 자동으로 처음에 호출됩니다. 바인딩된 소켓의 정보는 파라미터 'socket' 에 있습니다.
+
+* Ping( data ) - Listener ( Pong(data) )
+클라이언트가 서버와의 접속 상태를 확인하고 싶을 때 호출합니다. 넘어온 데이터 (파라미터) 의 값을 그대로 emit 합니다.
+
+* List( data ) - Listener ( RespondList( pyData ) ) 
