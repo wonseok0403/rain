@@ -23,7 +23,7 @@ for i in line :
 # 벌터 초기 설정 종료 ----------------------------------- *
 def Create(dcid, vpslanid, osid):
     return Vultr.server.create(dcid, vpslanid, osid)
-
+    #return "{u'SUBID': u'17910597'}"
 def ListAll() :
     print( GetDcids() )
     print('\n\n')
