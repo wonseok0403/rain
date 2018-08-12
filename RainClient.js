@@ -36,9 +36,14 @@ lineReader.on('line', function (line) {
 
 // Restful API 를 운영하기 위한 웹서버 구축 부분
 const express = require('express');
+const bodyparser = require('body-parser');
 const app = express();
 const io = require('socket.io-client');
-
+// 웹서버에서 post message 를 body 로 부터 파싱하기 위한 과정 ( 어떤 브라우저에서든 사용 가능하도록 설정 )
+app.use(bodyparser.urlencoded({
+    extended: true
+}));
+app.use(bodyparser.json());
 // !- Restful API 구축 부분 !- //
 // 명명 규칙에 대해서는 https://restfulapi.net/resource-naming/ 문서를 참고하십시오.
 
@@ -77,7 +82,36 @@ app.get('/list/vultr-lists', function(req, res){
     global.socket.emit("List", {});
 });
 
-// !- Webserver 가동 부분 !- //
+/** [POST] /server/instance
+ *  @details    Vultr에서 새로운 인스턴스를 생성합니다.
+ *  @param      body 에서 dcid, vpsplanid, osid 에 값을 넣어서 post 메시지를 보내주어야 합니다.
+ *  @return     생성 상태가 확인되면 ResponseCreate 함수가 호출되고 해당 SubID 를 Return 합니다.
+ *              새로 생성된 인스턴스의 상태가 running이 되면 CreateDone 리스너가 호출됩니다. */
+app.post('/server/instance', function(req, res){
+    console.log(req.body);
+    var dcid = req.body.dcid;
+    var vpsplanid = req.body.vpsplanid;
+    var osid = req.body.osid;
+    var Parameter = '{' 
+                    + '"dcid" : ' + dcid + ","
+                    + '"vpsplanid" : ' + vpsplanid + ","
+                    + '"osid" : ' + osid 
+    + '}';
+    
+    // 생성된 인스턴스 상태가 running 일 경우 호출됩니다.
+    global.socket.on("CreateDone", function(data){
+        res.json(data.toString());
+        console.log("인스턴스 실행 상황 확인");
+    });
+    // 인스턴스 생성 요청이 완료되었을 경우 호출됩니다.
+    global.socket.on("ResponseCreate", function(data){
+        console.log("인스턴스 생성 완료 : " , data.toString());
+        console.log("인스턴스 실행 대기중");
+    });
+    global.socket.emit("CreateRequest", Parameter);
+});
+
+ // !- Webserver 가동 부분 !- //
 app.listen(3000, () => {
     console.log("Rain Client is running on 3000 !!!");
 });

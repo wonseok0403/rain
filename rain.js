@@ -47,14 +47,20 @@ sock.on("connection", function(socket){
     *  @see      초기 설정을 가장 저렴하고 서버를 일본에 두고 싶다면 아래 설정을 따르십시오.
     *            {"dcid":25, "vpsplanid":201, "osid":216}                    */
     socket.on("CreateRequest", function(data){
-        var ParsedData = JSON.parse(JSON.stringify(data));
-        var dcid = data['dcid'];
-        var vpsplanid = data['vpsplanid'];
-        var osid = data['osid'];
+        var ParsedData = JSON.parse(data);
+        var dcid = ParsedData['dcid'];
+        var vpsplanid = ParsedData['vpsplanid'];
+        var osid = ParsedData['osid'];
         const {spawn} = require("child_process");
         const pyProg = spawn('python', ['./VultrMaker.py', 'create', dcid, vpsplanid, osid]);
+        console.log(dcid, vpsplanid, osid);
+        /**
+         * @details 아래 함수는 VultrMaker.py 의 create 함수를 호출하여 호출된 내역에서 Subid를 추출합니다.
+         *          주요 알고리즘은, 리턴되는 형태는 {subid : 정수값} 의 문자열 형태로, 여기서 정수값 만 추출합니다.
+         */
         pyProg.stdout.on('data', function(pyData) 
         {
+            console.log("pyProg 63 line is called");
             var len = pyData.toString().length;
             var ParsedData = "";
             for(var i=0; i<len; i++) {
@@ -62,8 +68,36 @@ sock.on("connection", function(socket){
                     ParsedData = ParsedData + pyData.toString()[i];
                 }
             }
-            var ParsedInt = parseInt(ParsedData,10);
-            console.log("ParssedData : " + ParsedInt);
+            // 만약 해당 subid의 정수 값이 필요할 경우 아래 함수를 이용하십시오.
+            //var ParsedInt = parseInt(ParsedData,10);
+            //console.log("ParssedData : " + ParsedInt);
+
+            /**
+             * @details 아래 함수는 일정 간격으로 새로 생성된 인스턴스의 상태를 확인하여 running 인지 확인합니다.
+             *          만약 running 상태라면 호출한 소켓에 CreateDone 리스너를 호출하여 running 임을 알립니다.
+             */
+            var flag = false;
+            var repeat = setInterval(function(){
+                const {spawn} = require("child_process");
+                const pyProg = spawn('python', ['./VultrMaker.py', 'subdetail', ParsedData]);
+                pyProg.stdout.on('data', function(pyData){
+                    console.log(pyData.toString());
+                    if( pyData.toString().indexOf('stop') > -1 ) {
+                        console.log('Stop');
+                        flag = true;
+                    }
+                    if( (pyData.toString().indexOf('run') > -1)) {
+                        console.log('Running!');
+                        if( flag == true) {
+                            console.log('flag is true');
+                            socket.emit("CreateDone", pyData.toString());
+                            clearInterval(repeat);
+                        }
+                    }
+                });
+            }, 5000); // 5초(5000 ms) 간격으로 상태를 확인합니다.
+
+            // 인스턴스의 running 여부의 상관 없이 create 에 성공했다고 알립니다.
             socket.emit("ResponseCreate", pyData.toString());
         })
     });
@@ -79,4 +113,6 @@ sock.on("connection", function(socket){
             socket.emit("ResponseServerList", pyData.toString());
         })
     });
+
+
 });
