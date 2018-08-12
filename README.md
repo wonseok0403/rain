@@ -53,3 +53,8 @@ ListAll 함수에서 호출하기 위해 만들어진 함수입니다. 파이썬
 * CreateRequest( data ) - Listener ( CreateDone( pyData.toString() ), ResponseCreate( pyData.toString() )
 새로운 가상머신을 구축하도록 요청합니다. 이 요청은 파이썬 스크립트로 전달되고 벌터 API로 연결됩니다. 이 API가 호출되고, 일단 벌터 인스턴스 생성이 완료되면 응답 메시지가 오게됩니다. 이 응답메시지는 Subid 의 값이며 ResponseCreate 함수 파라미터 안에 들어갑니다.
 새로 생성된 인스턴스의 상태는 running( 기존에 있던 클라우드 제거작업 ) -> stopped( 새로운 운영체제 설치 ) -> starting( 운영체제 설치 완료 후 전원 ) -> running( 작동 ) 의 상태를 거치게 됩니다. stopped 를 거치고, running 상태가 되면 CreateDone 함수를 호출하여 생성 완료를 알리게 됩니다.
+
+* ServerList( data ) - Listener ( ResponseServerList( pyData.toString() ) 
+벌터 계정이 가지고 있는 모든 서버 리스트를 리턴합니다. API호출이 완료도면 해당 내역을 문자열로 변환하여 리스너에 파라미터로 넘겨줍니다.
+
+####CreateRequest 부분은 Rain.js 의 존재 이유이기도 하며 굉장이 중요한 함수입니다. 이 함수의 구조도는 다음과 같습니다.
