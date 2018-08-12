@@ -25,6 +25,7 @@ def Create(dcid, vpslanid, osid):
     return Vultr.server.create(dcid, vpslanid, osid)
     #return "{u'SUBID': u'17910597'}"
 def ListAll() :
+    # 서버 리스트가 아님에 주의하십시오.
     print( GetDcids() )
     print('\n\n')
     print(GetVPSPIDs())
@@ -44,6 +45,7 @@ def GetOSIDs() :
     return Vultr.os.list()
 
 def GetInstances() :
+    # 서버 리스트 항목을 리턴합니다.
     print(Vultr.server.list())
 
 def CheckStatusById(Subid) :
