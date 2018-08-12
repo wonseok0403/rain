@@ -24,3 +24,14 @@ ListAll 함수에서 호출하기 위해 만들어진 함수입니다. 파이썬
 ### Vultr Maker 실행하기
 #### 요구 사항 설치
 > pip install -r requirements.txt
+#### API 값 넣어주기
+> vim .config
+> apikey=< apikey 값 from vultr > // <-- 입력
+##### 1) 클라우드 생성하기
+> python ./VultrMaker create [dcid] [vpsplanid] [osid]
+##### 2) Vultr 계정에 포함된 모든 인스턴스 목록 보기
+> python ./VultrMaker list
+##### 3) Vultr 에서 제공하는 dcid, vpsplanid, osid 목록 보기
+> python ./VultrMaker listall
+##### 4) 해당 Subid 를 subid 값으로 갖는 인스턴스의 상태 살펴보기
+> python ./VultrMaker subdetail [Subid]
