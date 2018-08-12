@@ -61,3 +61,23 @@ ListAll 함수에서 호출하기 위해 만들어진 함수입니다. 파이썬
 ![2018-08-13 6 08 48](https://user-images.githubusercontent.com/20366503/44006445-809533e6-9ebf-11e8-9593-3d18ce646478.png)
 
 ##### 클라이언트들이 CreateRequest 함수를 호출하게되면 Rain.js 는 비동기적으로 이 처리를 진행하게 됩니다. 이 처리 흐름은 각각의 PythonScript 를 spawn 하게 하며, 새로 만들어진 파이썬 스크립트들은 vultrMaker.py 함수의 create api 함수를 이용하여 vultr 서버에 서버 구축 요청을 하게 됩니다. 이 요청의 결과로 받은 subid를 우선 ResponseCreate 의 결과로 리턴합니다. <br> 아직 인스턴스가 생성중이기 때문에, VultrMaker 들은 벌터 서버에 5초 간격으로 현재 이 서버의 상태를 확인하게 됩니다. 확인 결과 running -> stopped -> running 이 되면 createDone 함수를 호출하여 서버 생성의 완료를 알리어 서버를 바로 접속하여 이용할 수 있게 됩니다. 
+
+# Rain-Client
+### Rain-Client 는 실제 우박에 들어갈 클라이언트로서, 서버와의 통신을 담당합니다. 이 클라이언트를 이용하려면 이용자는 이 클라이언트에 미리 제작되어있는 멋진 api 를 호출하면 끝입니다. 호출된 api 는 rain 서버와 자동으로 통신을 명령하게되며, 통신을 통해 여려 결과를 얻어낼 수 있습니다. <br> 다음은 Rain-Client 에 구축되어있는 api들의 내역과 설명입니다.
+
+* [GET] /
+이 서버가 Rain.js 서버와 연결되어있는지 확인하고 싶을 때 이용합니다. Ping 함수를 호출하는데, 이 때 호출할 때 클라이언트의 시간을 보내어 받게됩니다. 이 시간차이를 이용하면 실제 핑 시간을 구해낼 수 있습니다.
+
+* [GET] /list/instances
+Vultr 에 등록되어있는 서버들의 목록을 구할 때 호출합니다. 이 함수를 호출함으로써 벌터 계정이 갖고 있는 인스턴스의 내역과 자세한 설명을 알아낼 수 있게 됩니다.
+
+* [GET] /list/vultr-lists
+Create 를 위해 필요한 정보들인 dcid, vpsplanid, osid 정보를 얻어낼 때 호출합니다.
+
+* [POST[ /server/instanace
+새로운 서버를 create 하고 싶을 때 호출합니다. body 안에 json 형식으로 dcid, vpsplanid, osid의 값을 반드시 넣어주어야 합니다. 예시 폼음 아래와 같습니다.  
+{  
+  "dcid" : 20  
+  "vpsplanid" : 20  
+  "osid" : 20  
+}  
