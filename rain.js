@@ -41,8 +41,14 @@ app.post('/api/v1/rainstate', async (req, res) => {
     const client = new pg.Client(connectionString);
     await client.connect();
     const query = client.query(
-        `INSERT INTO BuildResult (app, sate, date) VALUES (${app}, ${state}, ${date});`
-    );
+        `INSERT INTO buildresult (app, sate, date) VALUES (${app}, ${state}, ${date});`
+    )
+    .then(() => {
+        console.log('updated rain state');
+    })
+    .catch((error) => {
+        console.log(error);
+    });
     await client.end();
 });
 app.listen(8080, () =>{
