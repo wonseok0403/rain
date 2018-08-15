@@ -27,7 +27,7 @@ const client = new pg.Client(connectionString);
 client.connect();
 const query = client.query(
     'CREATE TABLE BuildResult(app, state, date, text VARCHAR(40) not null, text VARCHAR(40) not null, text VARCHAR(40) not null)');
-query.on('end', () => {client.end();});
+query.on('end', () => { client.end(); });
 
 
 // 소켓 IO 메인 함수
