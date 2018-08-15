@@ -20,18 +20,59 @@ var server = http.createServer(function (req, res){
 server.listen(1685);
 var sock = io.listen(server); 
 
-const setServer = async () => {
-    // DB 설정 부분
+// 웹 API 구축 부분
+const express = require('express');
+const app = express();
+const bodyparser = require('body-parser');
+app.use(bodyparser.urlencoded({
+    extended: true
+}));
+app.use(bodyparser.json());
+
+app.post('/api/v1/rainstate', async (req, res) => {
+    var app = req.body.app;
+    var state = req.body.state;
+    var date = new Date;
+    
     const pg = require('pg');
-    const connectionString = process.env.DATABASE_URL || 'postgresql://localhost:5432/';
+    const connectionString = process.env.DATABASE_URL || 'postgresql://rain:rainrainrain@198.13.36.153:5432/rain';
+    console.log(connectionString);
+
     const client = new pg.Client(connectionString);
     await client.connect();
-    var res = client.query(
-        'CREATE TABLE BuildResult(app, state, date, text VARCHAR(40) not null, text VARCHAR(40) not null, text VARCHAR(40) not null)');
+    const query = client.query(
+        `INSERT INTO BuildResult (app, sate, date) VALUES (${app}, ${state}, ${date});`
+    );
     await client.end();
+});
+app.listen(8080, () =>{
+    console.log("Web api is running on 8080");
+});
+
+
+const createTable = async () => {
+    // DB 설정 부분
+    const pg = require('pg');
+    const connectionString = process.env.DATABASE_URL || 'postgresql://rain:rainrainrain@198.13.36.153:5432/rain';
+    console.log(connectionString);
+    const client = new pg.Client(connectionString);
+    await client.connect();
+    console.log('DB connected')
+    const query = client.query(
+        // 'CREATE TABLE BuildResult(app, state, date, text VARCHAR(40) not null, text VARCHAR(40) not null, text VARCHAR(40) not null);'
+        'CREATE TABLE BuildResult(id SERIAL PRIMARY KEY, app VARCHAR(40) not null, state VARCHAR(40) not null, date VARCHAR(40) not null);'
+    )
+    .then(() => {
+        console.log('created table');
+    })
+    .catch((error) => {
+        console.log(error);
+    });
+
+    query.on('end', () => { client.end(); });
 }
 
-setServer();
+createTable();
 
 // 소켓 IO 메인 함수
 sock.on("connection", function(socket){

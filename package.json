@@ -1,0 +1,32 @@
+{
+  "name": "rain",
+  "version": "1.0.0",
+  "description": "![2018-08-12 5 32 43](https://user-images.githubusercontent.com/20366503/44000274-eaf62e06-9e57-11e8-9419-534f6a1da3c8.png)",
+  "main": "RainClient.js",
+  "directories": {
+    "example": "examples",
+    "test": "tests"
+  },
+  "dependencies": {
+    "express": "^4.16.3",
+    "http": "0.0.0",
+    "knex": "^0.15.2",
+    "pg": "^7.4.3",
+    "socket.io": "^2.1.1",
+    "tedious": "^2.6.4"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wonseok0403/rain.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/wonseok0403/rain/issues"
+  },
+  "homepage": "https://github.com/wonseok0403/rain#readme"
+}
