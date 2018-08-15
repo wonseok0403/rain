@@ -18,7 +18,17 @@ var server = http.createServer(function (req, res){
 
 // 서버 설정 부분
 server.listen(1685);
-var sock = io.listen(server);      
+var sock = io.listen(server); 
+
+// DB 설정 부분
+const pg = require('pg');
+const connectionString = process.env.DATABASE_URL || 'postgresql://localhost:5432/';
+const client = new pg.Client(connectionString);
+client.connect();
+const query = client.query(
+    'CREATE TABLE BuildResult(app, state, date, text VARCHAR(40) not null, text VARCHAR(40) not null, text VARCHAR(40) not null)');
+query.on('end', () => {client.end();});
+
 
 // 소켓 IO 메인 함수
 sock.on("connection", function(socket){
