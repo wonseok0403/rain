@@ -20,15 +20,18 @@ var server = http.createServer(function (req, res){
 server.listen(1685);
 var sock = io.listen(server); 
 
-// DB 설정 부분
-const pg = require('pg');
-const connectionString = process.env.DATABASE_URL || 'postgresql://localhost:5432/';
-const client = new pg.Client(connectionString);
-await client.connect();
-var res = await client.query(
-    'CREATE TABLE BuildResult(app, state, date, text VARCHAR(40) not null, text VARCHAR(40) not null, text VARCHAR(40) not null)');
-await client.end();
+const setServer = async () => {
+    // DB 설정 부분
+    const pg = require('pg');
+    const connectionString = process.env.DATABASE_URL || 'postgresql://localhost:5432/';
+    const client = new pg.Client(connectionString);
+    await client.connect();
+    var res = client.query(
+        'CREATE TABLE BuildResult(app, state, date, text VARCHAR(40) not null, text VARCHAR(40) not null, text VARCHAR(40) not null)');
+    await client.end();
+}
 
+setServer();
 
 // 소켓 IO 메인 함수
 sock.on("connection", function(socket){
