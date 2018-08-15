@@ -24,10 +24,10 @@ var sock = io.listen(server);
 const pg = require('pg');
 const connectionString = process.env.DATABASE_URL || 'postgresql://localhost:5432/';
 const client = new pg.Client(connectionString);
-client.connect();
-const query = client.query(
+await client.connect();
+var res = await client.query(
     'CREATE TABLE BuildResult(app, state, date, text VARCHAR(40) not null, text VARCHAR(40) not null, text VARCHAR(40) not null)');
-query.on('end', () => { client.end(); });
+await client.end();
 
 
 // 소켓 IO 메인 함수
