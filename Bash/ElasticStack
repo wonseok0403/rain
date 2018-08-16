@@ -1,0 +1,19 @@
+sudo apt-get install -y openjdk-8-jre-headless -y
+cat <<EOF |sudo tee /etc/apt/sources.list.d/elasticstack-2.x.list
+deb https://packages.elastic.co/elasticsearch/2.x/debian stable main
+deb https://packages.elastic.co/logstash/2.4/debian stable main
+deb https://packages.elastic.co/kibana/4.6/debian stable main
+EOF
+wget -qO - https://packages.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
+sudo apt-get update && sudo apt-get install -y elasticsearch
+sudo sed -i "s/.*cluster.name: .*/cluster.name: hyeoncheon/" /etc/elasticsearch/elasticsearch.yml
+sudo systemctl daemon-reload
+sudo systemctl enable elasticsearch.service
+sudo systemctl restart elasticsearch.service
+curl 'localhost:9200/_cat/health?v'
+curl 'localhost:9200/_cat/nodes?v'
+sudo apt-get install -y kibana
+sudo systemctl enable kibana.service
+sudo systemctl restart kibana.service
+sudo ufw allow from 192.168.1.0/24 to any app Kibana
+sudo apt-get install -y logstash
