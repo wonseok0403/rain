@@ -35,13 +35,13 @@ app.post('/api/v1/rainstate', async (req, res) => {
     var date = new Date;
     
     const pg = require('pg');
-    const connectionString = process.env.DATABASE_URL || 'postgresql://rain:rainrainrain@198.13.36.153:5432/rain';
+    const connectionString = process.env.DATABASE_URL || 'postgresql://rain:rainrainrain@127.0.0.1:5432/rain';
     console.log(connectionString);
 
     const client = new pg.Client(connectionString);
     await client.connect();
     const query = client.query(
-        `INSERT INTO buildresult (app, state, date) VALUES ('${app}', '${state}', '${date}');`
+        `INSERT INTO buildresult ( app, state, date) VALUES ( '${app}', '${state}', '${date}');`
     )
     .then(() => {
         console.log('updated rain state');
@@ -49,7 +49,7 @@ app.post('/api/v1/rainstate', async (req, res) => {
     .catch((error) => {
         console.log(error);
     });
-    await client.end();
+    client.end();
 });
 app.listen(8080, () =>{
     console.log("Web api is running on 8080");
@@ -59,14 +59,14 @@ app.listen(8080, () =>{
 const createTable = async () => {
     // DB 설정 부분
     const pg = require('pg');
-    const connectionString = process.env.DATABASE_URL || 'postgresql://rain:rainrainrain@198.13.36.153:5432/rain';
+    const connectionString = process.env.DATABASE_URL || 'postgresql://rain:rainrainrain@127.0.0.1:5432/rain';
     console.log(connectionString);
     const client = new pg.Client(connectionString);
     await client.connect();
     console.log('DB connected')
     const query = client.query(
         // 'CREATE TABLE BuildResult(app, state, date, text VARCHAR(40) not null, text VARCHAR(40) not null, text VARCHAR(40) not null);'
-        'CREATE TABLE BuildResult(id SERIAL PRIMARY KEY, app VARCHAR(40) not null, state VARCHAR(40) not null, date VARCHAR(40) not null);'
+        'CREATE TABLE BuildResult( app VARCHAR(40) not null, state VARCHAR(40) not null, date VARCHAR(40) not null);'
     )
     .then(() => {
         console.log('created table');
