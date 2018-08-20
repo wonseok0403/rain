@@ -10,6 +10,6 @@ sudo add-apt-repository \
    stable"
 sudo apt-get update -y
 sudo apt-get install docker-ce -y
-sudo docker run -d --restart=unless-stopped -p 80:80 -p 443:443 rancher/rancher
+sudo docker run -d --restart=unless-stopped -p 8080:8080 -p 443:443 rancher/server
 
 # https://www.npmjs.com/package/rancher-api
