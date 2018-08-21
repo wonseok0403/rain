@@ -51,6 +51,15 @@ def GetInstances() :
 def CheckStatusById(Subid) :
     print(Vultr.server.list(subid=Subid)['power_status'])
     
+def GetSubidByName(name):
+    # Vultr.server.list 함수는 사용자의 인스턴스 목록을 { subid : { isntance detail } } 와 같은 형식으로 리턴합니다.
+    # 이렇게 리턴된 인스턴스 내역에서 서버 라벨 정보를 비교합니다.
+    ServerList = Vultr.server.list()
+    #print(ServerList)
+    for i in ServerList :
+        if( ServerList[i]['label'] == name ) :
+            return i
+    return 0
 
 if __name__ == '__main__':
     if( len( sys.argv ) < 2 ):
@@ -60,6 +69,7 @@ if __name__ == '__main__':
         print(' -- 2. list ')
         print((' -- 3. listall (dcid, osid, vpsplanid 확인)'))
         print(' -- 4. subdetail [Subid] ')
+        print(' -- 5. gsn [Name] (Get Subid by Name) [testing] ')
         print('-------------------------------------')
     option = sys.argv[1]
     if( option == 'list' ) :
@@ -75,3 +85,6 @@ if __name__ == '__main__':
             print(Create(sys.argv[2], sys.argv[3], sys.argv[4]))
     if( option == 'subdetail' ) :
         CheckStatusById(sys.argv[2])
+    if( option == 'gsn' ):
+        tmp = GetSubidByName(sys.argv[2])
+        print( tmp ) 
