@@ -3,6 +3,7 @@ import tests
 import vultr
 import unittest
 import os, subprocess, sys
+from pexpect import pxssh
 
 
 # 벌터 초기 설정 시작 --------------------------------
@@ -61,6 +62,47 @@ def GetSubidByName(name):
             return i
     return 0
 
+def SystemInit(Subid) :
+    # 4. 폴링을 통해서 서버가 올라갔다고 확인이 되면, 서버의 기본 root 비밀번호로 그 서버에 접속한다.
+    ## Get IP, Username[root], PW
+    ServerList = Vultr.server.list()
+    SERV_IP = ""
+    USER_NAME = "root"
+    USER_PW = ""
+    for i in ServerList : 
+        if( ServerList[i]['SUBID'] == Subid) :
+            SERV_IP = ServerList[i]['main_ip']
+            USER_PW = ServerList[i]['default_password']
+            break
+    Shell = pxssh.pxssh()
+    Shell.login(SERV_IP, USER_NAME, USER_PW)
+    Shell.sendline('apt-get update')
+    Shell.sendline('apt-get upgrade')
+    Shell.prompt()
+    print(Shell.before.decode())
+
+    # 5. 새로운 클라우드 인스턴스에 passwd, update, upgrade, 랜처 호스트 등록을 한다.
+    # 6. 새로운 서버에서 avocado-test-server 깃허브 리포를 clone한다.
+    # 7. 금방 클론한 리포에서 docker-compose up -d --build하여 코드를 배포시킨다.
+
+def SetServer(ip, role, pw) :
+    # 4. 폴링을 통해서 서버가 올라갔다고 확인이 되면, 서버의 기본 root 비밀번호로 그 서버에 접속한다.
+    ## Get IP, Username[root], PW
+    ServerList = Vultr.server.list()
+    SERV_IP = ip
+    USER_NAME = role
+    USER_PW = pw
+
+    Shell = pxssh.pxssh()
+    Shell.login(SERV_IP, USER_NAME, USER_PW)
+    
+    Shell.prompt()
+    print(Shell.before.decode())
+
+    # 5. 새로운 클라우드 인스턴스에 passwd, update, upgrade, 랜처 호스트 등록을 한다.
+    # 6. 새로운 서버에서 avocado-test-server 깃허브 리포를 clone한다.
+    # 7. 금방 클론한 리포에서 docker-compose up -d --build하여 코드를 배포시킨다.
+
 if __name__ == '__main__':
     if( len( sys.argv ) < 2 ):
         print('옵션을 정의해야 합니다.')
@@ -70,6 +112,8 @@ if __name__ == '__main__':
         print((' -- 3. listall (dcid, osid, vpsplanid 확인)'))
         print(' -- 4. subdetail [Subid] ')
         print(' -- 5. gsn [Name] (Get Subid by Name) [testing] ')
+        print(' -- 6. sysinit [Subid] ')
+        print(' -- 7. setserver [ip] [role] [pw]')
         print('-------------------------------------')
     option = sys.argv[1]
     if( option == 'list' ) :
@@ -88,3 +132,7 @@ if __name__ == '__main__':
     if( option == 'gsn' ):
         tmp = GetSubidByName(sys.argv[2])
         print( tmp ) 
+    if( option == 'sysinit' ):
+        SystemInit( sys.argv[2] )
+    if( option == 'setserver' ) :
+        SetServer( sys.argv[2], sys.argv[3], sys.argv[4])
